@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>Simple Map</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.15/esri/css/esri.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.15/dijit/themes/claro/claro.css">
+    <style>
+     html, body, .container, #map {
+    height:100%;
+    width:100%;
+    margin:0;
+    padding:0;
+    margin:0;
+    font-family: "Open Sans";
+      }
+    </style>
+    <script src="https://js.arcgis.com/3.15/"></script>
+    <script>
+      var map;
+      var idWebMap = "df8bcc10430f48878b01c96e907a1fc3"
+      require(["esri/map", "esri/arcgis/utils", "esri/dijit/LayerList",
+      "esri/dijit/BasemapToggle",
+      "dojo/domReady!"], function(Map, arcgisUtils, LayerList, BasemapToggle) {
+        defResponse = arcgisUtils.createMap(idWebMap, "map").then(function(response){
+          var myWidget = new LayerList({
+            map: response.map,
+            layers: arcgisUtils.getLayerList(response)
+            }, "layerList");
+
+            myWidget.startup();  
+
+            var toggle = new BasemapToggle({
+            map: response.map,
+            basemap: "satellite"
+            }, "BasemapToggle");
+            toggle.startup();      
+
+        });
+
+
+        });
+      
+    </script>
+  </head>
+
+  <body class="claro">
+    <div class="container" data-dojo-type="dijit/layout/BorderContainer" 
+         data-dojo-props="design:'headline',gutters:false">
+      <div id="layerListPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'right'">
+        <div id="layerList"></div>
+      </div>
+      <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+        <div id="BasemapToggle"></div>
+      </div>
+    </div>
+</body>
+</html>

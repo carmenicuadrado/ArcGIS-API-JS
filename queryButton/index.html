@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>Simple Map</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.16/esri/css/esri.css">
+    <style>
+      html, body, #map {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #buttonQuery {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+      }
+     
+    </style>
+    <script src="https://js.arcgis.com/3.16/"></script>
+    <script>
+      var map;
+
+      require(["esri/map",
+               "esri/tasks/query",
+               "esri/tasks/QueryTask",
+               "esri/symbols/SimpleMarkerSymbol",
+               "esri/Color",
+               "dijit/form/Button", "dojo/dom",
+               "dijit/layout/ContentPane",
+               "dojo/domReady!"], function(Map, Query, QueryTask, SimpleMarkerSymbol, Color, Button, dom) {
+        map = new Map("map", {
+          basemap: "topo",  //For full list of pre-defined basemaps, navigate to http://arcg.is/1JVo6Wd
+          center: [-122.45, 37.75], // longitude, latitude
+          zoom: 3
+        });      
+
+        //Define a symbology
+        var ptoSymbol = new SimpleMarkerSymbol();
+             ptoSymbol.setSize(10);
+             ptoSymbol.setStyle(SimpleMarkerSymbol.STYLE_CIRCLE);
+             ptoSymbol.setColor( new Color("#4CAF50"));          
+       
+       // Define the show function that fires when the query task is executed 
+       function show(queryResult){
+             var queryFeatures = queryResult.features;             
+
+             for(var i = 0; i < queryFeatures.length; i++){
+               queryFeatures[i].symbol = ptoSymbol;
+               map.graphics.add(queryFeatures[i]);
+             };
+            };
+       var myButton = new Button({
+           label: "Query!",
+           onClick: function(){
+            // Define a "query" object
+            var query = new Query();
+            query.where = "pop2000 > 3000"
+            query.outFields = ["areaname", "st", "pop2000"]
+            query.returnGeometry = true;
+
+            
+                  
+           
+            // Define a QueryTask by using the above query and an ArcGIS Server REST resource (http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/0):
+            var urlREST = "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/0"
+            var queryTask = new QueryTask(urlREST);
+            queryTask.execute(query,show);
+           
+        }
+      }, "progButtonNode").startup();
+
+           
+
+      });
+    </script>
+  </head>
+
+  <body>
+      <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+        <div id = "buttonQuery"style="position:absolute; right:20px; top:10px; z-Index:999;">
+          <div data-dojo-type="dijit/TitlePane">
+            <button id="progButtonNode" type="dijit/form/Button"></button>
+          </div>
+        </div>
+      </div>
+    
+    
+  </body>
+</html>

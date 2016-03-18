@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>Simple Map</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.16/esri/css/esri.css">
+    <style>
+      html, body, #map {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script src="https://js.arcgis.com/3.16/"></script>
+    <script>
+      var map;
+
+      require(["esri/map",
+               "esri/layers/GraphicsLayer",
+               "esri/geometry/Point",
+               "esri/graphic",
+               "esri/symbols/SimpleMarkerSymbol",
+               "esri/Color",
+               "esri/geometry/Polyline",
+               "esri/symbols/SimpleLineSymbol",
+               "esri/geometry/Polygon",
+               "esri/symbols/SimpleFillSymbol", 
+               "dojo/domReady!"], function(Map, GraphicsLayer,Point, Graphic, SimpleMarkerSymbol, Color, Polyline, SimpleLineSymbol, Polygon, SimpleFillSymbol) {
+        map = new Map("map", {
+          basemap: "topo",  //For full list of pre-defined basemaps, navigate to http://arcg.is/1JVo6Wd
+          center: [-122.45, 37.75], // longitude, latitude
+          zoom: 13
+        });
+        
+         var ptoSymbol = new SimpleMarkerSymbol();
+         ptoSymbol.setSize(50);
+         ptoSymbol.setStyle(SimpleMarkerSymbol.STYLE_CIRCLE);
+         ptoSymbol.setColor( new Color([23, 176, 3, 0.5]));
+
+
+
+
+         var glayer = new GraphicsLayer();
+
+        map.on("click", function(evt){
+          
+        var point = new Point(evt.mapPoint);
+        var graphic = new Graphic(point, ptoSymbol);
+          
+
+        /*  var lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASH,
+                           new Color([255,0,0]),
+                           3);
+
+          //var linePath = [[-50, 0], [-120, -20], [-130, 0]];
+
+          //var polyline = new Polyline(map.spatialReference);
+          //polyline.addPath(linePath);
+          //var graphic = new Graphic(polyline, lineSymbol);
+
+          var polygonSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, lineSymbol, new Color("red"));
+
+          var polygonRing = [[-50, 0], [-120, -20], [-130, 0], [-50, 0]];
+          var polygon = new Polygon(map.spatialReference);
+          polygon.addRing(polygonRing);
+          var graphic = new Graphic(polygon, polygonSymbol);*/
+
+          glayer.clear();
+          glayer.add(graphic);
+          map.addLayer(glayer);      
+          
+           
+        
+
+
+      });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

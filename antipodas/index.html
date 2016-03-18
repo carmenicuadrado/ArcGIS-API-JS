@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>Antipodas</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.15/esri/css/esri.css">
+    <style>
+
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color:#C5DCE9;
+}
+#map {
+    float: left;
+    height: 500px;
+    width: 570px;
+    margin: 50px;
+     
+}
+#map2 {
+    float: right;
+    height: 500px;
+    width: 570px;
+    margin: 50px;
+     
+}
+#title {
+    background-color:#C5DCE9;
+    color:#1B7DB4;
+    text-align: right;
+    padding: 0; 
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 200%;
+    margin: 0;
+}
+
+#BasemapToggle {
+    float: left;  
+    }
+
+</style>
+    <script src="https://js.arcgis.com/3.15/">
+</script>
+    <script>
+
+
+var map;
+
+require(["esri/map", 
+"esri/geometry/webMercatorUtils", "esri/geometry/Point", "esri/dijit/BasemapToggle",
+"dijit/layout/BorderContainer", "dijit/layout/ContentPane", 
+"dojo/domReady!"], function(Map, webMercatorUtils, Point, BasemapToggle) {
+    map = new Map("map",{
+        basemap: "topo",
+        //For full list of pre-defined basemaps, navigate to http://arcg.is/1JVo6Wd
+        center: [-5.45, 37.75],
+        // longitude, latitude
+        zoom: 13
+    });
+    map2 = new Map("map2",{
+        basemap: "topo",
+        center: [-122.45, 37.75],
+        zoom: 13
+    }); 
+    map.on("load", function(change) {
+        var center = map.extent.getCenter();
+        var centerLngLat = webMercatorUtils.xyToLngLat(center.x, center.y);
+        var Lng = centerLngLat[0];
+        var Lat = centerLngLat[1];
+        if (Lng < 0) {
+          var LngAnt = Lng + 180;
+          var centerAntLngLat = new Point(LngAnt, - Lat);
+        } 
+        else {
+          var LngAnt = Lng - 180;
+          var centerAntLngLat = new Point(LngAnt, - Lat);
+        }   
+         map2.centerAt(centerAntLngLat);
+     });  
+    map.on("pan-end", function(change) {
+        var center = map.extent.getCenter();
+        var centerLngLat = webMercatorUtils.xyToLngLat(center.x, center.y);
+        var Lng = centerLngLat[0];
+        var Lat = centerLngLat[1];
+        if (Lng < 0) {
+          var LngAnt = Lng + 180;
+          var centerAntLngLat = new Point(LngAnt, - Lat);
+        } 
+        else {
+          var LngAnt = Lng - 180;
+          var centerAntLngLat = new Point(LngAnt, - Lat);
+        }   
+         map2.centerAt(centerAntLngLat);
+     });
+
+    map.on("zoom-end", function(evt){
+      var zoom = map.getZoom();
+        map2.setZoom(zoom);
+    });
+        
+     map2.on("pan-end", function(change2) {
+        var center = map2.extent.getCenter();
+        var centerLngLat = webMercatorUtils.xyToLngLat(center.x, center.y);
+        var Lng = centerLngLat[0];
+        var Lat = centerLngLat[1];
+        if (Lng < 0) {
+          var LngAnt = Lng + 180;
+          var centerAntLngLat = new Point(LngAnt, - Lat);
+        } 
+        else {
+          var LngAnt = Lng - 180;
+          var centerAntLngLat = new Point(LngAnt, - Lat);
+        }   
+         map.centerAt(centerAntLngLat);
+     });
+     
+     map2.on("zoom-end", function(evt){
+      var zoom = map2.getZoom();
+        map.setZoom(zoom);
+    });
+
+     var toggle = new BasemapToggle({
+        map: map,
+        basemap: "satellite"
+      }, "BasemapToggle");
+      toggle.startup();
+   
+
+});
+</script>
+  </head>
+
+  <body>
+    <header id = "header">
+      <p id = "title">Antipodes Map</p>
+    </header>  
+    <div id="map"
+        data-dojo-type="dijit/layout/ContentPane">
+        <div style="position:absolute; right:20px; top:10px; z-Index:999;">
+            <div id = "BasemapToggle"></div>    
+        </div>
+    </div>
+    <div id = "map2"></div>
+    
+
+  </body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>Simple Map</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.16/esri/css/esri.css">
+    <style>
+      html, body, #map {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script src="https://js.arcgis.com/3.16/"></script>
+    <script>
+      var map;
+
+      require(["esri/map",
+               "esri/renderers/HeatmapRenderer",
+               "esri/layers/FeatureLayer",
+               "esri/InfoTemplate",
+               "dojo/domReady!"], function(Map, HeatmapRenderer, FeatureLayer, InfoTemplate) {
+        map = new Map("map", {
+          basemap: "topo",  //For full list of pre-defined basemaps, navigate to http://arcg.is/1JVo6Wd
+          center: [-122.45, 37.75], // longitude, latitude
+          zoom: 3
+        });
+        // Create the renderer
+        heatRenderer = new HeatmapRenderer({
+          colors: ["rgba(215, 89, 0, 0)","rgba(215, 24, 2, 0.8)",],
+          field: "Magnitude",
+          blurRadius: 10,
+          maxPixelIntensity: 400,
+          minPixelIntensity: 10
+        });
+
+        //Create the feature layer
+        var infoTemplate = new InfoTemplate("Attributes",
+          "Name: ${Name}<br>Magnitude: ${Magnitude:formatMagnitude}");
+        var urlRESTfl = "http://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Earthquakes_Since_1970/FeatureServer/0"
+        var flOptions = {
+          mode: FeatureLayer.MODE_SNAPSHOT,
+          outFields: ["Name", "Magnitude"],
+          infoTemplate: infoTemplate
+        };
+
+        var flayer = new FeatureLayer(urlRESTfl, flOptions);
+     map.on("click", function(){
+        flayer.setRenderer(heatRenderer);
+        map.addLayer(flayer);
+      });
+     }); 
+    </script>
+  </head>
+
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

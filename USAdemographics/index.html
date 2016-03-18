@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>USAdemographics</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.15/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.15/esri/css/esri.css">
+    <style>
+      html, body, .container, #map {
+    height:100%;
+    width:100%;
+    margin:0;
+    padding:0;
+    margin:0;
+    font-family: "Open Sans";
+    }
+
+    #layerListPane{
+    width:20%;
+    float: right;
+    }
+
+    .esriLayer{
+    background-color: #fff;
+    }
+
+    .esriLayerList .esriList{
+    border-top:none;
+    }
+
+    #search {
+         display: block;
+         position: absolute;
+         z-index: 2;
+         top: 20px;
+         left: 74px;
+    }
+    </style>
+    <script src="https://js.arcgis.com/3.15/"></script>
+    <script>var dojoConfig = { parseOnLoad: true };</script>
+    <script>
+      var map;
+
+      var urlDynamicService = "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer";
+
+
+      require(["esri/map",
+               "esri/arcgis/utils",
+               "esri/dijit/LayerList",
+               "esri/dijit/Search",
+               "esri/layers/ArcGISDynamicMapServiceLayer",
+               "esri/layers/FeatureLayer",
+               "esri/InfoTemplate",
+               "dijit/layout/BorderContainer", 
+               "dijit/layout/ContentPane", 
+               "dojo/domReady!"], function(Map, arcgisUtils, LayerList, Search, ArcGISDynamicMapServiceLayer, FeatureLayer, InfoTemplate) {
+        map = new Map("map", {
+          basemap: "topo",  //For full list of pre-defined basemaps, navigate to http://arcg.is/1JVo6Wd
+          center: [-122.45, 37.75], // longitude, latitude
+          zoom: 3
+        });
+
+        var citiesfl = new FeatureLayer("http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/0");
+        map.addLayer(citiesfl);
+        var statesfl = new FeatureLayer("http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/2");
+        map.addLayer(statesfl);
+
+        // Create and add a dynamic layerListPane
+        var dynamicLayer = new ArcGISDynamicMapServiceLayer (urlDynamicService, {
+          id: "U.S.A."
+        });
+        map.addLayer(dynamicLayer);
+
+        // Create the Layer list widget, including the dynamic layers
+        dynamicLayer.on("load",function(evt){
+          var laylist = evt.layer.layerInfos;
+
+        var WidgetListLayers = new LayerList({
+            map: map,
+            layers: evt,
+            showSubLayers: true,
+            showLegend: true,
+            showOpacitySlider: true            
+            }, "layerList");
+
+        WidgetListLayers.startup();
+          
+         // Create the Search widget
+         var search = new Search({
+            map: map,
+            addLayersFromMap: false,
+            enableButtonMode: true,
+            addLayersFromMap: true            
+         }, "search");          
+          
+         var sources = search.get("sources");
+
+        
+        
+         
+         search.set("sources", sources);
+         search.startup();
+        });
+        
+        var infoTemplateCities = new InfoTemplate("Attributes", "Citie: ${areaname}.Population: ${st}");
+        
+        
+
+      });
+    </script>
+  </head>
+
+  <body class="claro">
+    <div class="container" data-dojo-type="dijit/layout/BorderContainer" 
+         data-dojo-props="design:'headline',gutters:false">
+          
+          <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">              
+            <div style="position:absolute; right:20px; top:10px; z-Index:999;">
+              <div data-dojo-type="dijit/TitlePane" 
+                   data-dojo-props="title:'LayerList', closable:true, open:true">
+                  <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
+                    <div id="layerList"></div>
+                  </div>
+              </div>
+            </div>              
+          </div>
+    </div>
+    <div id="search"></div>
+  </body>
+</html>
